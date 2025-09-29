@@ -12,9 +12,9 @@ class SurveySubmission(BaseModel):
     user_agent: Optional[str] = None
     submission_id: Optional[str] = None
 
-    class StoredSurveyRecord(SurveySubmission):
-        received_at: datetime
-        ip: str
+class StoredSurveyRecord(SurveySubmission):
+    received_at: datetime
+    ip: str
   
 
     @validator("comments")
@@ -27,7 +27,14 @@ class SurveySubmission(BaseModel):
             raise ValueError("consent must be true")
         return v
         
-#Good example of inheritance
-class StoredSurveyRecord(SurveySubmission):
+class StoredSurveyRecord(BaseModel):
+    name: str
+    email: str      # hashed email
+    age: str        # hashed age
+    consent: bool
+    rating: int
+    comments: Optional[str]
+    user_agent: Optional[str]
+    submission_id: str
     received_at: datetime
     ip: str
