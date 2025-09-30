@@ -40,7 +40,6 @@ def submit_survey():
     if data.get("age") is not None:
         data["age"] = sha256_hash(str(submission.age))
 
-    # 👇 NEW: generate submission_id if missing
     if not data.get("submission_id"):
         raw_email = submission.email
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H")
@@ -51,11 +50,12 @@ def submit_survey():
     record = StoredSurveyRecord(
         **data,
         received_at=datetime.now(timezone.utc),
-        ip=request.headers.get("X-Forwarded-For", request.remote_addr or "")
+        ip=request.headers.get("X-Forwarded-For", request.remote_addr or ""), 
+        submission_id = generate_submission_id(str(submission.email))
     )
     
     append_json_line(record.dict())
     return jsonify({"status": "ok", "submission_id": data["submission_id"]}), 201
 
 if __name__ == "__main__":
-    app.run(port=0, debug=True)
+    app.run(port=5000, debug=True)
