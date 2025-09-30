@@ -45,16 +45,12 @@ def submit_survey():
         data["age"] = sha256_hash(str(submission.age))
 
     if not data.get("submission_id"):
-        raw_email = submission.email
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H")
-        unique_str = f"{raw_email}{timestamp}"
-        data["submission_id"] = sha256_hash(unique_str)
+        data["submission_id"] = generate_submission_id(submission.email)
     
     record = StoredSurveyRecord(
         **data,
         received_at=datetime.now(timezone.utc),
         ip=request.headers.get("X-Forwarded-For", request.remote_addr or ""), 
-        submission_id = generate_submission_id(str(submission.email))
     )
     
     append_json_line(record.dict())
