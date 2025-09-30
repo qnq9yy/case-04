@@ -13,6 +13,10 @@ CORS(app, resources={r"/v1/*": {"origins": "*"}})
 def sha256_hash(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
+def generate_submission_id(email: str) -> str:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H")
+    return sha256_hash(f"{email}{timestamp}")
+
 @app.route("/ping", methods=["GET"])
 def ping():
     """Simple health check endpoint."""
@@ -45,8 +49,7 @@ def submit_survey():
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H")
         unique_str = f"{raw_email}{timestamp}"
         data["submission_id"] = sha256_hash(unique_str)
-
-
+    
     record = StoredSurveyRecord(
         **data,
         received_at=datetime.now(timezone.utc),
