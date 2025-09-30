@@ -35,6 +35,6 @@ class StoredSurveyRecord(BaseModel):
     rating: int
     comments: Optional[str]
     user_agent: Optional[str]
-    submission_id: str
+    submission_id: Optional[str] = None
     received_at: datetime
     ip: str
